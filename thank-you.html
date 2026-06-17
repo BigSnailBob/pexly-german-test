@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thank You — German Language Test</title>
+  <link rel="stylesheet" href="testquestions.css">
+</head>
+<body>
+  <div class="thank-you-card">
+    <div class="thank-you-icon">✓</div>
+    <h1 class="js-thank-you-title">Thank you!</h1>
+    <p class="js-thank-you-message">Your response has been recorded.</p>
+    <p class="thank-you-subtle">You may now close this window.</p>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("reason") === "timeout") {
+      document.querySelector(".js-thank-you-title").textContent = "Time's up!";
+      document.querySelector(".js-thank-you-message").textContent =
+        "Your test has been submitted automatically. Your responses have been recorded.";
+    }
+  </script>
+</body>
+</html>
