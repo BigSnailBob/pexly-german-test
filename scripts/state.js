@@ -1,12 +1,12 @@
-import { questions } from "../data/testquestions.js";
+import { grammarQuestions, scenarioQuestions } from "../data/testquestions.js";
 
 const TEST_DURATION_MS = 25 * 60 * 1000;
 const STORAGE = {
-  start: "germanTest_startTime_v2",
-  answers: "germanTest_answers_v2",
-  personal: "germanTest_personalInfo_v2",
+  start: "germanTest_startTime_v3",
+  answers: "germanTest_answers_v3",
+  personal: "germanTest_personalInfo_v3",
 };
-const personalFields = ['fname', 'lname', 'email', 'phonenum'];
+const personalFields = ['fname', 'lname', 'email', 'phonenum', 'project', 'recruiter'];
 let onTimeoutCallback = null;
 let timerIntervalId = null;
 
@@ -35,37 +35,58 @@ export function clearTestState() {
 };
 
 function restoreSavedData() {
-  const personal = JSON.parse(localStorage.getItem(STORAGE.personal) || '{}');
+  const personal = JSON.parse(localStorage.getItem(STORAGE.personal) || "{}");
 
   personalFields.forEach((field) => {
     const element = document.querySelector(`#${field}`);
     if (element && personal[field]) element.value = personal[field];
   });
 
-  const answers = JSON.parse(localStorage.getItem(STORAGE.answers) || '{}');
-  Object.entries(answers).forEach(([id, value]) => {
-    const element = document.querySelector(`#answer-${id}`);
-    if (element) element.value = value;
-  });
+  const answers = JSON.parse(localStorage.getItem(STORAGE.answers) || "{}");
+
+  // Restore grammar radio selections
+  if (answers.grammar) {
+    Object.entries(answers.grammar).forEach(([id, value]) => {
+      const radio = document.querySelector(`input[name="grammar-${id}"][value="${value}"]`);
+      if (radio) radio.checked = true;
+    });
+  }
+
+  // Restore scenario textareas
+  if (answers.scenarios) {
+    Object.entries(answers.scenarios).forEach(([id, value]) => {
+      const element = document.querySelector(`#scenario-${id}`);
+      if (element) element.value = value;
+    });
+  }
 }
 
 function setupAutoSave() {
-  const form = document.querySelector('form');
-  
-  form.addEventListener('input', () => {
+  const form = document.querySelector("form");
+
+  form.addEventListener("input", () => {
+    // Save personal info
     const personal = {};
     personalFields.forEach((id) => {
       personal[id] = document.querySelector(`#${id}`).value;
     });
     localStorage.setItem(STORAGE.personal, JSON.stringify(personal));
 
-    const answers = {};
-    questions.forEach((question) => {
-      const element = document.querySelector(`#answer-${question.id}`);
-      if (element) answers[question.id] = element.value;
+    // Save grammar (radio selections) and scenarios (textarea values)
+    const answers = { grammar: {}, scenarios: {} };
+
+    grammarQuestions.forEach((question) => {
+      const checked = document.querySelector(`input[name="grammar-${question.id}"]:checked`);
+      if (checked) answers.grammar[question.id] = parseInt(checked.value, 10);
     });
+
+    scenarioQuestions.forEach((question) => {
+      const element = document.querySelector(`#scenario-${question.id}`);
+      if (element) answers.scenarios[question.id] = element.value;
+    });
+
     localStorage.setItem(STORAGE.answers, JSON.stringify(answers));
-  })
+  });
 }
 
 function initTimer() {

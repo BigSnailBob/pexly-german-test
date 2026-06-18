@@ -30,11 +30,34 @@
       
       <div class="question-container">
         <label for="phonenum" class="question-label">Phone Number</label>
-        <input type="text" id="phonenum" placeholder="Phone Number" class="question-input" required>
+        <input
+          type="tel"
+          id="phonenum"
+          placeholder="+49 123 4567890"
+          class="question-input"
+          pattern="\+[\d\s\-]{7,20}"
+          required
+        >
+        <p class="field-hint">Please include your country code, e.g. +49 for Germany, +43 for Austria, +41 for Switzerland.</p>
+      </div>
+      <div class="question-container">
+        <label for="project" class="question-label">Which project are you applying for?</label>
+        <input type="text" id="project" placeholder="e.g. Customer Service – DACH" class="question-input" required>
+      </div>
+
+      <div class="question-container">
+        <label for="recruiter" class="question-label">Name of the recruiter who contacted you</label>
+        <input type="text" id="recruiter" placeholder="First and last name" class="question-input" required>
+      </div>
+
+      <div class="question-container">
+        <label for="cv" class="question-label">Upload your CV (PDF only)</label>
+        <input type="file" id="cv" accept="application/pdf,.pdf" class="question-input file-input" required>
+        <p class="field-hint">Maximum file size: 5 MB</p>
       </div>
     </fieldset>
 
-    <fieldset class="js-language-test language-test"></fieldset>
+    <div class="js-language-test language-test"></div>
 
     <div class="form-message js-form-message" role="status" aria-live="polite"></div>
 

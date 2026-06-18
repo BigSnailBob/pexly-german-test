@@ -46,10 +46,12 @@ legend {
 }
 
 .personal-information,
-.language-test {
+.language-test,
+.grammar-section,
+.scenario-section {
   display: flex;
   flex-direction: column;
-  gap: 22px;
+  gap: 28px;
 }
 
 .question-container {
@@ -390,4 +392,102 @@ body:has(.welcome-card) {
 
 .welcome-button:active {
   transform: translateY(0);
+}
+
+/* --- Multiple-choice options (grammar test) --- */
+.options-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background-color: #f9fafb;
+  cursor: pointer;
+  font-size: 15px;
+  color: #111827;
+  line-height: 1.4;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.option:hover {
+  border-color: #9ca3af;
+  background-color: #f3f4f6;
+}
+
+.option:has(input:checked) {
+  border-color: #f59e0b;
+  background-color: #fffbeb;
+}
+
+.option input[type="radio"] {
+  accent-color: #f59e0b;
+  cursor: pointer;
+  flex-shrink: 0;
+  margin: 0;
+}
+
+/* Question label as a <p> instead of <label> needs reset */
+.grammar-section .question-label {
+  margin: 0 0 4px;
+}
+.field-hint {
+  margin: -4px 0 0;
+  font-size: 13px;
+  color: #6b7280;
+  font-style: italic;
+}
+
+/* --- Copy protection on the test section --- */
+.language-test {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+/* Re-enable text selection inside textareas so candidates can edit their own answers */
+.language-test textarea {
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+/* --- File input (CV upload) --- */
+.file-input {
+  padding: 8px 12px;
+  cursor: pointer;
+  background-color: #f9fafb;
+  font-size: 14px;
+}
+
+.file-input::file-selector-button {
+  margin-right: 14px;
+  padding: 8px 16px;
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  color: #1f2937;
+  border: none;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.file-input::file-selector-button:hover {
+  box-shadow: 0 4px 10px rgba(245, 158, 11, 0.4);
+  transform: translateY(-1px);
+}
+
+.form-message.is-info {
+  background-color: #eff6ff;
+  color: #1e40af;
+  border: 1px solid #bfdbfe;
 }

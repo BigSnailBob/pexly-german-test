@@ -10,8 +10,10 @@
   <div class="thank-you-card">
     <div class="thank-you-icon">✓</div>
     <h1 class="js-thank-you-title">Thank you!</h1>
-    <p class="js-thank-you-message">Your response has been recorded.</p>
-    <p class="thank-you-subtle">You may now close this window.</p>
+    <p class="js-thank-you-message">
+      Your response has been recorded. Our AI assistant will call you shortly on the phone number you provided to continue with the spoken assessment.
+    </p>
+    <p class="thank-you-subtle">Please keep your phone nearby and ready to answer.</p>
   </div>
 
   <script>
@@ -19,7 +21,7 @@
     if (params.get("reason") === "timeout") {
       document.querySelector(".js-thank-you-title").textContent = "Time's up!";
       document.querySelector(".js-thank-you-message").textContent =
-        "Your test has been submitted automatically. Your responses have been recorded.";
+        "Your test has been submitted automatically. Our AI assistant will call you shortly on the phone number you provided to continue with the spoken assessment.";
     }
   </script>
 </body>
