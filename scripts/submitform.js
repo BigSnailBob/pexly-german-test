@@ -1,7 +1,7 @@
 import { grammarQuestions, scenarioQuestions, getCefrLevelFromGrammarScore } from "../data/testquestions.js";
 import { clearTestState } from "./state.js";
 
-const WEBHOOK_URL = 'https://pexly-ai.app.n8n.cloud/webhook-test/2ec4a2e7-624f-4da6-9eae-54d043e38990';
+const WEBHOOK_URL = 'https://pexly-ai.app.n8n.cloud/webhook/2ec4a2e7-624f-4da6-9eae-54d043e38990';
 const UPLOAD_URL = 'https://script.google.com/macros/s/AKfycbxOHACVm04EwWT5SRKgQLNO7tkt-BKf2i7cERnmkZ6tap9r71dvk_SHcCCepEAfssynRg/exec';
 const messageElement = document.querySelector('.js-form-message');
 
