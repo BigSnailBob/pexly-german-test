@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="testquestions.css">
 </head>
 <body>
-  <div class="timer js-timer">40:00</div>
+  <div class="timer js-timer" style="display: none;">40:00</div>
 
   <form action="" class="js-interview--form">
     <fieldset class="personal-information">
@@ -84,12 +84,15 @@
         </p>
       </div>
     </fieldset>
+    <button type="button" class="start-button js-start-button">Start Test</button>
 
-    <div class="js-language-test language-test"></div>
+    <div class="js-test-section" style="display: none;">
+      <div class="js-language-test language-test"></div>
 
-    <div class="form-message js-form-message" role="status" aria-live="polite"></div>
+      <div class="form-message js-form-message" role="status" aria-live="polite"></div>
 
-    <button type="submit" class="submit-button">Submit</button>
+      <button type="submit" class="submit-button">Submit</button>
+    </div>
 
   </form>
 

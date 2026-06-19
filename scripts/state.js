@@ -14,8 +14,23 @@ export function initTestState(onTimeout) {
   onTimeoutCallback = onTimeout;
   restoreSavedData();
   setupAutoSave();
-  initTimer();
 };
+
+export function isTestInProgress() {
+  const startTime = parseInt(localStorage.getItem(STORAGE.start), 10);
+  if (!startTime || Number.isNaN(startTime)) return false;
+
+  // If the saved start time is older than 2× the test duration, treat as abandoned
+  const isStale = (Date.now() - startTime) > TEST_DURATION_MS * 2;
+  if (isStale) {
+    localStorage.removeItem(STORAGE.start);
+    localStorage.removeItem(STORAGE.answers);
+    localStorage.removeItem(STORAGE.personal);
+    return false;
+  }
+
+  return true;
+}
 
 export function clearTestState() {
   localStorage.removeItem(STORAGE.start);
@@ -89,7 +104,7 @@ function setupAutoSave() {
   });
 }
 
-function initTimer() {
+export function startTimer() {
   let startTime = parseInt(localStorage.getItem(STORAGE.start), 10);
 
   if (!startTime || Number.isNaN(startTime)) {
