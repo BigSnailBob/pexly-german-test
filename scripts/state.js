@@ -1,6 +1,6 @@
 import { grammarQuestions, scenarioQuestions } from "../data/testquestions.js";
 
-const TEST_DURATION_MS = 25 * 60 * 1000;
+const TEST_DURATION_MS = 40 * 60 * 1000;
 const STORAGE = {
   start: "germanTest_startTime_v3",
   answers: "germanTest_answers_v3",
@@ -29,7 +29,7 @@ export function clearTestState() {
 
   const timerElement = document.querySelector(".js-timer");
   if (timerElement) {
-    timerElement.textContent = "25:00";
+    timerElement.textContent = "40:00";
     timerElement.classList.remove("is-warning", "is-critical");
   }
 };

@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="testquestions.css">
 </head>
 <body>
-  <div class="timer js-timer">25:00</div>
+  <div class="timer js-timer">40:00</div>
 
   <form action="" class="js-interview--form">
     <fieldset class="personal-information">
@@ -54,6 +54,34 @@
         <label for="cv" class="question-label">Upload your CV (PDF only)</label>
         <input type="file" id="cv" accept="application/pdf,.pdf" class="question-input file-input" required>
         <p class="field-hint">Maximum file size: 5 MB</p>
+      </div>
+
+      <div class="question-container">
+        <label for="speedScreenshot" class="question-label">Submit a screenshot of your internet speed</label>
+        <input
+          type="file"
+          id="speedScreenshot"
+          accept="image/png,image/jpeg,image/jpg,image/webp"
+          class="question-input file-input"
+          required
+        >
+        <p class="field-hint">
+          You can check your speed at <a href="https://www.speedtest.net/" target="_blank" rel="noopener">speedtest.net</a>. PNG or JPG, max 5 MB.
+        </p>
+      </div>
+
+      <div class="question-container">
+        <label for="deviceScreenshot" class="question-label">Submit a screenshot of your device specs</label>
+        <input
+          type="file"
+          id="deviceScreenshot"
+          accept="image/png,image/jpeg,image/jpg,image/webp"
+          class="question-input file-input"
+          required
+        >
+        <p class="field-hint">
+          <strong>Windows:</strong> Win+I → System → About. <strong>Mac:</strong> Apple Menu → About this Mac. PNG or JPG, max 5 MB.
+        </p>
       </div>
     </fieldset>
 

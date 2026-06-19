@@ -2,7 +2,7 @@ import { grammarQuestions, scenarioQuestions, getCefrLevelFromGrammarScore } fro
 import { clearTestState } from "./state.js";
 
 const WEBHOOK_URL = 'https://pexly-ai.app.n8n.cloud/webhook/2ec4a2e7-624f-4da6-9eae-54d043e38990';
-const UPLOAD_URL = 'https://script.google.com/macros/s/AKfycbxOHACVm04EwWT5SRKgQLNO7tkt-BKf2i7cERnmkZ6tap9r71dvk_SHcCCepEAfssynRg/exec';
+const UPLOAD_URL = 'https://script.google.com/macros/s/AKfycbwO1cMxrZajqq9mzepU0nFhIO-romgdceLCuuEC5dnRrH7Jt7nSaDJ9yzRV77nd09oa9w/exec';
 const messageElement = document.querySelector('.js-form-message');
 
 function showMessage(text, type) {
@@ -35,17 +35,22 @@ function fileToBase64(file) {
   });
 }
 
-async function uploadCV(file) {
-  const base64 = await fileToBase64(file);
+async function uploadFiles({ candidateName, files }) {
+  // Convert each file to base64 in parallel
+  const fileData = await Promise.all(
+    files.map(async (item) => ({
+      fileName: item.file.name,
+      fileBase64: await fileToBase64(item.file),
+      mimeType: item.file.type,
+      fileType: item.fileType
+    }))
+  );
 
   const response = await fetch(UPLOAD_URL, {
-    method: 'POST',
-    // Intentionally NOT setting Content-Type: application/json
-    // This avoids a CORS preflight and Apps Script handles plain text fine.
+    method: "POST",
     body: JSON.stringify({
-      fileName: file.name,
-      fileBase64: base64,
-      mimeType: file.type
+      candidateName,
+      files: fileData
     })
   });
 
@@ -58,7 +63,7 @@ async function uploadCV(file) {
     throw new Error(result.error || "Upload failed");
   }
 
-  return result; // { fileId, fileUrl, fileName }
+  return result;
 }
 
 export async function submitForm({ isAutoSubmit = false } = {}) {
@@ -81,27 +86,68 @@ export async function submitForm({ isAutoSubmit = false } = {}) {
 
   // Validate CV file (only on manual submit; auto-submit with no file is allowed)
   const cvInput = document.querySelector('#cv');
+  const speedInput = document.querySelector('#speedScreenshot');
+  const deviceInput = document.querySelector('#deviceScreenshot');
+
   const cvFile = cvInput.files[0];
+  const speedFile = speedInput.files[0];
+  const deviceFile = deviceInput.files[0];
+
+  const MAX_FILE_SIZE = 5 * 1024 * 1024;
 
   if (!isAutoSubmit) {
+    // CV
     if (!cvFile) {
       showMessage("Please upload your CV before submitting.", "error");
       cvInput.focus();
       return;
     }
-
-    if (cvFile.type !== 'application/pdf') {
+    if (cvFile.type !== "application/pdf") {
       showMessage("Your CV must be a PDF file.", "error");
       cvInput.focus();
       return;
     }
-
-    if (cvFile.size > 5 * 1024 * 1024) {
-      showMessage("Your CV is larger than 5 MB. Please compress it and try again.", "error");
+    if (cvFile.size > MAX_FILE_SIZE) {
+      showMessage("Your CV is larger than 5 MB. Please compress it.", "error");
       cvInput.focus();
       return;
     }
+
+    // Internet speed screenshot
+    if (!speedFile) {
+      showMessage("Please upload your internet speed screenshot.", "error");
+      speedInput.focus();
+      return;
+    }
+    if (!speedFile.type.startsWith("image/")) {
+      showMessage("The internet speed screenshot must be an image (PNG or JPG).", "error");
+      speedInput.focus();
+      return;
+    }
+    if (speedFile.size > MAX_FILE_SIZE) {
+      showMessage("The internet speed screenshot is larger than 5 MB.", "error");
+      speedInput.focus();
+      return;
+    }
+
+    // Device specs screenshot
+    if (!deviceFile) {
+      showMessage("Please upload your device specs screenshot.", "error");
+      deviceInput.focus();
+      return;
+    }
+    if (!deviceFile.type.startsWith("image/")) {
+      showMessage("The device specs screenshot must be an image (PNG or JPG).", "error");
+      deviceInput.focus();
+      return;
+    }
+    if (deviceFile.size > MAX_FILE_SIZE) {
+      showMessage("The device specs screenshot is larger than 5 MB.", "error");
+      deviceInput.focus();
+      return;
+    }
   }
+
   const personalInfo = {
     firstName: document.querySelector('#fname').value.trim(),
     lastName: document.querySelector('#lname').value.trim(),
@@ -157,14 +203,21 @@ export async function submitForm({ isAutoSubmit = false } = {}) {
     answer: document.querySelector(`#scenario-${question.id}`).value.trim()
   }));
 
-  let cvUploadResult = null;
-  if (cvFile) {
-    showMessage("Uploading your CV... please wait.", "info");
+  let uploadResult = null;
+  if (cvFile && speedFile && deviceFile) {
+    showMessage("Uploading your files... please wait.", "info");
     try {
-      cvUploadResult = await uploadCV(cvFile);
+      uploadResult = await uploadFiles({
+        candidateName: `${personalInfo.firstName}_${personalInfo.lastName}`,
+        files: [
+          { file: cvFile,     fileType: "cv" },
+          { file: speedFile,  fileType: "speedScreenshot" },
+          { file: deviceFile, fileType: "deviceScreenshot" }
+        ]
+      });
     } catch (error) {
-      console.error("CV upload failed:", error);
-      showMessage("Could not upload your CV. Please try again or check your connection.", "error");
+      console.error("File upload failed:", error);
+      showMessage("Could not upload your files. Please try again or check your connection.", "error");
       return;
     }
   }
@@ -173,17 +226,19 @@ export async function submitForm({ isAutoSubmit = false } = {}) {
     submittedAt: new Date().toISOString(),
     personalInfo: {
       ...personalInfo,
-      cv: cvUploadResult ? {
-        fileName: cvUploadResult.fileName,
-        fileId: cvUploadResult.fileId,
-        fileUrl: cvUploadResult.fileUrl
-      } : null
+      folder: uploadResult ? {
+        folderId: uploadResult.folderId,
+        folderUrl: uploadResult.folderUrl,
+        folderName: uploadResult.folderName
+      } : null,
+      cv: uploadResult?.files?.cv || null,
+      speedScreenshot: uploadResult?.files?.speedScreenshot || null,
+      deviceScreenshot: uploadResult?.files?.deviceScreenshot || null
     },
     grammarSummary,
     grammarAnswers,
     scenarioAnswers
   };
-
 
   try {
     const response = await fetch(WEBHOOK_URL, {
